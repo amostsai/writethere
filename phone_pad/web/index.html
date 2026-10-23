@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>手機手寫板</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<main>
+  <header><span class="brand">手機 → 電腦</span><h1>寫好，傳過去。</h1>
+    <p>使用手機的手寫輸入法，確認文字後再傳送。</p></header>
+  <p id="connection" class="status" role="status">正在連線…</p>
+  <section id="pair-panel" class="card" aria-label="手機配對">
+    <form id="pair-form">
+      <label for="code">輸入電腦顯示的 6 位數驗證碼</label>
+      <input id="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required placeholder="000000">
+      <button id="pair" class="primary" type="submit">驗證並連線</button>
+      <p id="pair-result" class="result" role="status" aria-live="polite"></p>
+    </form>
+    <p class="pair-note">同一時間只允許一支手機連線。斷線 30 秒後會釋放連線，並更新驗證碼。</p>
+  </section>
+  <section id="pad-panel" class="card" aria-label="文字輸入" hidden>
+    <button id="disconnect" class="quiet" type="button">中斷手機連線</button>
+    <label for="text">想在電腦輸入的文字</label>
+    <textarea id="text" maxlength="20000" placeholder="在這裡輸入文字…" rows="9"></textarea>
+    <div class="meta"><span id="count">0 / 20,000</span><button id="clear" class="quiet" type="button">清空文字</button></div>
+    <label for="mode">貼到哪一種輸入框？</label>
+    <select id="mode"><option value="normal">一般輸入框（Ctrl＋V）</option><option value="terminal">終端機（Ctrl＋Shift＋V）</option></select>
+    <button id="send" class="primary" type="button" disabled>傳送到電腦</button>
+    <p id="result" class="result" role="status" aria-live="polite"></p>
+  </section>
+  <footer>先在電腦點選要輸入的位置，再按傳送。<br>傳送會取代電腦剪貼簿內容；文字與換行會原樣貼上。<br>終端機收到換行時可能執行指令，請先確認內容。</footer>
+</main>
+</body>
+</html>

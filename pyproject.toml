@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phone-handwriting-pad"
+version = "0.1.0"
+description = "A LAN phone input pad for GNOME Wayland"
+requires-python = ">=3.12"
+dependencies = ["aiohttp>=3.12,<4", "dbus-next>=0.2.3,<0.3", "qrcode>=8,<9"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "pytest-asyncio>=1,<2"]
+
+[project.scripts]
+phone-pad = "phone_pad.desktop:main"
+
+[tool.setuptools.package-data]
+phone_pad = ["web/*", "assets/*"]
+
+[tool.setuptools.packages.find]
+include = ["phone_pad*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

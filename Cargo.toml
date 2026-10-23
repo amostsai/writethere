@@ -1,0 +1,59 @@
+[package]
+name = "phone-pad"
+version = "0.2.3"
+edition = "2021"
+rust-version = "1.88"
+description = "Phone input pad for Windows, macOS and GNOME Wayland"
+
+[features]
+test-fixture = []
+
+[[example]]
+name = "http-fixture"
+required-features = ["test-fixture"]
+
+[[example]]
+name = "live-backend"
+required-features = ["test-fixture"]
+
+[dependencies]
+anyhow = "1"
+axum = "0.8"
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "net", "sync", "time", "macros", "io-util", "signal", "io-std"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rand = "0.8"
+sha2 = "0.10"
+subtle = "2"
+tempfile = "3"
+directories = "6"
+if-addrs = "0.13"
+qrcode = { version = "0.14", default-features = false }
+
+[target.'cfg(not(target_os = "windows"))'.dependencies]
+eframe = { version = "0.33.3", default-features = false, features = ["glow", "wayland", "x11", "default_fonts"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+eframe = { version = "0.33.3", default-features = false, features = ["wgpu", "default_fonts"] }
+wgpu = { version = "27.0.1", default-features = false, features = ["std", "dx12", "wgsl"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+ashpd = { version = "0.13", default-features = false, features = ["tokio", "remote_desktop", "clipboard", "screencast"] }
+futures-util = "0.3"
+
+[target.'cfg(any(target_os = "windows", target_os = "macos"))'.dependencies]
+arboard = { version = "3.6", default-features = false }
+enigo = { version = "0.6", default-features = false }
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
+
+[profile.dev]
+debug = 0
+incremental = false
+
+[profile.release]
+strip = true
+lto = "thin"
+codegen-units = 8
