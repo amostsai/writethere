@@ -1,8 +1,8 @@
 # Rust 原生版本建置與封裝
 
-本專案的 Cargo package / executable 為 `phone-pad`，目前原始碼版本 `0.2.3`。
+本專案的 Cargo package 與 executable 為 `writethere`，目前原始碼版本 `0.2.6`。
 `Cargo.lock` 必須納入版本控制；建置與測試均使用 `--locked`。
-最低 Rust 版本為 1.88，GitHub Actions 固定使用 **1.93.1**。
+最低 Rust 版本為 1.89，GitHub Actions 固定使用 **1.93.1**。
 
 ## 原生建置
 
@@ -14,7 +14,7 @@
 | macOS Intel | `x86_64-apple-darwin` | `.app.zip`、SHA256 |
 
 輸出位於 `dist/`。檔名包含版本、作業系統與 CPU，例如
-`phone-pad-0.2.0-windows-x64.exe`、`phone-pad-0.2.0-macos-arm64.app.zip`。
+`writethere.exe`（Windows ZIP 內）、`writethere-0.2.5-macos-arm64.app.zip`。
 產物嵌入手機網頁資源與字型，不需要 Python、Node.js 或外部網頁伺服器。
 建置 shell 腳本使用 Python 3 解析 Cargo metadata；發行後執行程式不需要 Python。
 所有發行壓縮檔附帶 `NotoSansCJK-LICENSE.txt`（macOS 位於 `.app/Contents/Resources/`）；
@@ -63,7 +63,7 @@ GNOME Wayland 的鍵盤與剪貼簿操作仍需桌面 Portal 和使用者授權�
 `MACOSX_DEPLOYMENT_TARGET=10.15`，並將相同版本寫入 Info.plist。
 這些是建置部署目標，實際最舊系統仍須實機測試。
 `.app` 的識別碼是 `tw.local.PhoneHandwritingPad`，執行檔位於
-`Contents/MacOS/phone-pad`。它是一般可見應用程式（`LSUIElement=false`）。
+`Contents/MacOS/writethere`。它是一般可見應用程式（`LSUIElement=false`）。
 Info.plist 包含輔助使用權限用途說明；仍須在系統設定中允許控制鍵盤。
 
 目前沒有開發者簽章或公證憑證，封裝腳本沒有 Developer ID 簽章與 notarization 步驟。
@@ -110,7 +110,7 @@ export CARGO_TARGET_DIR=/tmp/phone-pad-cross/target
 export CARGO_TARGET_X86_64_PC_WINDOWS_GNULLVM_LINKER=/tmp/phone-pad-cross/llvm-mingw-20260908-ucrt-ubuntu-22.04-x86_64/bin/x86_64-w64-mingw32-gcc
 export CARGO_TARGET_X86_64_PC_WINDOWS_GNULLVM_RUSTFLAGS='--sysroot /tmp/phone-pad-cross/sysroot -C target-feature=+crt-static'
 export PATH="/tmp/phone-pad-cross/llvm-mingw-20260908-ucrt-ubuntu-22.04-x86_64/bin:$PATH"
-cargo build --locked --release --target x86_64-pc-windows-gnullvm --bin phone-pad
+cargo build --locked --release --target x86_64-pc-windows-gnullvm --bin writethere
 ```
 
 `+crt-static` 也讓 llvm-mingw 的 libunwind 靜態連結，避免發行時需要另外附帶 `libunwind.dll`。
@@ -141,3 +141,19 @@ Windows 目標僅開啟 eframe wgpu 與 wgpu dx12，優先使用 WARP 軟體繪�
 ## 0.2.3 介面可讀性
 
 一般文字與按鈕使用 18 點、提示文字 16 點、標題 26 點，驗證碼保留 32 點粗體。預設視窗改為 520×900。移除「停止並關閉」與字型授權入口，使用視窗關閉功能停止服務；字型授權文件保留在發行壓縮檔。隔離桌面已確認新版文字與按鈕完整顯示。
+
+## 0.2.4 WriteThere 名稱資訊
+
+主視窗標題與桌面啟動顯示名稱統一為 WriteThere；明確設定 app ID `tw.local.PhoneHandwritingPad`，對應同名 `.desktop` 檔，讓 Linux 桌面識別並顯示 WriteThere。Windows 使用 winresource 於建置時嵌入 FileDescription、ProductName、InternalName 與版本資訊。原有執行檔缺少 VERSIONINFO，不能提供產品名稱；視窗先前也沒有明確指定 app ID。
+
+## 0.2.5 執行檔與打包名稱
+
+Cargo package、library 與 binary 目標改為 `writethere`。`cargo build --release` 現在產生 `target/release/writethere`，Windows 為 `writethere.exe`。Windows ZIP 內放置 `writethere.exe`，Linux tar.gz 內放置 `writethere`；壓縮包名稱以 `writethere-版本-平台` 命名。啟動腳本、macOS bundle 內的執行檔名稱、CI artifact 名稱、Windows OriginalFilename 與診斷腳本已同步更新。既有 `phone-pad` 設定與診斷資料夾保留以沿用使用者資料。
+
+## 0.2.6 單一執行個體
+
+以標準函式庫 `File::try_lock` 取得每位使用者的 OS 排他鎖，建置最低版本因此改為 Rust 1.89。鎖檔位於使用者本機資料目錄的 `phone-pad/writethere.lock`，與設定埠、執行檔位置無關。鎖在視窗、HTTP 服務與診斷日誌初始化之前取得；第二次啟動安靜地以成功狀態結束，不覆寫第一個程序的日誌。其他檔案系統錯誤會回報，不當作重複啟動。關閉 handle 或程序終止時由 OS 釋放鎖；程式不刪除鎖檔以避免 inode 競爭，殘留檔案不代表程式仍在執行。
+
+標準函式庫行為參考 [Rust File::try_lock 文件](https://doc.rust-lang.org/std/fs/struct.File.html#method.try_lock)。
+
+0.2.6 驗證結果：完整 `cargo test --locked --all-targets` 共 24 項通過；重複啟動整合測試先在 0.2.5 重現失敗，再於修正後通過。`xvfb-run -a python3 tests/single_instance_smoke.py` 使用 dist 正式版確認三次重複啟動均結束，複製路徑與修改連接埠不能繞過限制、原程序日誌不被覆寫，以及 SIGKILL 後可正常重啟。Windows x64 release 交叉編譯成功，確認原生 LockFileEx import、保留 DX12、正確檔名與版本資訊；ZIP 及兩平台 SHA256 已核對。Windows 與 macOS 的實機單一執行行為仍須各平台執行確認。

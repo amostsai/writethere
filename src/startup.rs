@@ -59,11 +59,15 @@ impl Diagnostics {
             .as_ref()
             .map(|path| path.display().to_string())
             .unwrap_or_else(|| "無法寫入診斷檔".into());
-        let message = format!("手機手寫板無法正常啟動。\n\n{error}\n\n診斷檔：{location}\n\n請提供此訊息或執行診斷包中的 diagnose-windows.cmd。");
-        eprintln!("{message}");
-        #[cfg(target_os = "windows")]
-        show_error(&message);
+        let message = format!("WriteThere 無法正常啟動。\n\n{error}\n\n診斷檔：{location}\n\n請提供此訊息或執行診斷包中的 diagnose-windows.cmd。");
+        report_early_failure(&message);
     }
+}
+
+pub fn report_early_failure(message: &str) {
+    eprintln!("{message}");
+    #[cfg(target_os = "windows")]
+    show_error(message);
 }
 
 #[cfg(target_os = "windows")]
@@ -84,7 +88,7 @@ fn show_error(message: &str) {
             .collect::<Vec<_>>()
     };
     let text = wide(message);
-    let caption = wide("手機手寫板：啟動失敗");
+    let caption = wide("WriteThere：啟動失敗");
     // This native dialog does not depend on the graphics context that failed.
     unsafe {
         MessageBoxW(std::ptr::null_mut(), text.as_ptr(), caption.as_ptr(), 0x10);

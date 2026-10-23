@@ -4,18 +4,18 @@ mod renderer;
 mod startup;
 
 use eframe::egui;
-use phone_pad::{
-    model::{self, BackendCommand, StatusHandle},
-    platform::Platform,
-    service::{self, AppState},
-    settings,
-};
 use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
     time::Duration,
 };
 use tokio::sync::{mpsc, oneshot, watch};
+use writethere::{
+    model::{self, BackendCommand, StatusHandle},
+    platform::Platform,
+    service::{self, AppState},
+    settings,
+};
 
 #[derive(Default)]
 struct View {
@@ -293,7 +293,7 @@ impl eframe::App for PhonePad {
             .unwrap_or_default();
         self.update_qr(ctx, url);
         egui::CentralPanel::default().show(ctx,|ui| {egui::ScrollArea::vertical().show(ui,|ui| {
-            ui.add_space(8.);ui.heading("手機手寫板");ui.label("手機掃碼，寫好後傳到電腦游標所在的位置。");ui.add_space(12.);
+            ui.add_space(8.);ui.heading("WriteThere");ui.label("手機掃碼，寫好後傳到電腦游標所在的位置。");ui.add_space(12.);
             if !error.is_empty(){ui.colored_label(egui::Color32::DARK_RED,&error);}else{ui.label(if port.is_some(){"區網服務已啟動"}else{"正在啟動區網服務…"});}
             ui.horizontal(|ui| {
                 ui.label("連接埠");ui.add(egui::TextEdit::singleline(&mut self.port_text).desired_width(100.));
@@ -335,6 +335,14 @@ impl eframe::App for PhonePad {
     }
 }
 fn main() -> std::process::ExitCode {
+    let _instance = match writethere::instance::InstanceGuard::acquire() {
+        Ok(Some(guard)) => guard,
+        Ok(None) => return std::process::ExitCode::SUCCESS,
+        Err(error) => {
+            startup::report_early_failure(&format!("WriteThere 無法檢查執行狀態：{error}"));
+            return std::process::ExitCode::FAILURE;
+        }
+    };
     let diagnostics = startup::Diagnostics::initialize();
     match run(&diagnostics) {
         Ok(()) => {
@@ -351,7 +359,8 @@ fn main() -> std::process::ExitCode {
 fn run(diagnostics: &startup::Diagnostics) -> eframe::Result {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_title("手機手寫板")
+            .with_title("WriteThere")
+            .with_app_id("tw.local.PhoneHandwritingPad")
             .with_inner_size([520., 900.])
             .with_min_inner_size([440., 640.]),
         ..renderer::options(diagnostics)

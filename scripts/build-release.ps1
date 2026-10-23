@@ -11,16 +11,16 @@ $env:CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS = "$env:CARGO_TARGET_X86_64_P
 if (-not $OutputDirectory) { $OutputDirectory = Join-Path (Get-Location) "dist" }
 $metadata = cargo metadata --locked --no-deps --format-version 1 | ConvertFrom-Json
 if ($LASTEXITCODE -ne 0) { throw "cargo metadata failed" }
-$version = ($metadata.packages | Where-Object { $_.name -eq "phone-pad" }).version
+$version = ($metadata.packages | Where-Object { $_.name -eq "writethere" }).version
 cargo test --locked --target $Target
 if ($LASTEXITCODE -ne 0) { throw "cargo test failed" }
-cargo build --locked --release --target $Target --bin phone-pad
+cargo build --locked --release --target $Target --bin writethere
 if ($LASTEXITCODE -ne 0) { throw "cargo build failed" }
 New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
-$name = "phone-pad-$version-windows-x64"
-$exe = Join-Path $OutputDirectory "$name.exe"
+$name = "writethere-$version-windows-x64"
+$exe = Join-Path $OutputDirectory "writethere.exe"
 $zip = Join-Path $OutputDirectory "$name.zip"
-Copy-Item (Join-Path $metadata.target_directory "$Target/release/phone-pad.exe") $exe -Force
+Copy-Item (Join-Path $metadata.target_directory "$Target/release/writethere.exe") $exe -Force
 $license = Join-Path $OutputDirectory "NotoSansCJK-LICENSE.txt"
 Copy-Item (Join-Path $PSScriptRoot "../assets/NotoSansCJK-LICENSE.txt") $license -Force
 $diagnosticCmd = Join-Path $OutputDirectory "diagnose-windows.cmd"

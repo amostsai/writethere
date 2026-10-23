@@ -9,7 +9,7 @@ cat > "$launcher" <<EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=手機手寫板
+Name=WriteThere
 Comment=手機掃碼輸入文字，自動貼到電腦
 Exec="$exec_path"
 Icon=$PROJECT_DIR/phone_pad/assets/icon.svg

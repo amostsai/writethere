@@ -1,6 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $executables = @(Get-ChildItem -LiteralPath $PSScriptRoot -Filter 'phone-pad-*-windows-x64.exe' -File)
-$exe = if ($executables.Count -eq 1) { $executables[0].FullName } else { '' }
+$namedExe = Join-Path $PSScriptRoot 'writethere.exe'
+$exe = if (Test-Path -LiteralPath $namedExe) { $namedExe } elseif ($executables.Count -eq 1) { $executables[0].FullName } else { '' }
 $base = if ($env:LOCALAPPDATA) { $env:LOCALAPPDATA } else { $env:TEMP }
 $reportDir = Join-Path $base 'phone-pad'
 New-Item -ItemType Directory -Path $reportDir -Force | Out-Null
@@ -42,7 +43,11 @@ try {
         Report '--- Startup log from this launch ---'
         foreach ($line in (Get-Content -LiteralPath $startup -Encoding UTF8)) { Report $line }
     } else {
-        Report 'No fresh startup log: the program may have failed before entering Rust main().'
+        if ($process.HasExited -and $process.ExitCode -eq 0) {
+            Report 'No new startup log: WriteThere may already be running; duplicate launches exit normally.'
+        } else {
+            Report 'No fresh startup log: the program may have failed before entering Rust main().'
+        }
         $fallback = Join-Path $env:TEMP 'phone-pad/startup.log'
         if ((Test-Path -LiteralPath $fallback) -and (Get-Item -LiteralPath $fallback).LastWriteTimeUtc -ge $started.AddSeconds(-1)) {
             Report '--- Temporary startup log ---'

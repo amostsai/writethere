@@ -13,7 +13,7 @@ mod native;
 #[cfg(any(target_os = "windows", target_os = "macos"))]
 use native::Backend;
 #[cfg(not(any(target_os = "linux", target_os = "windows", target_os = "macos")))]
-compile_error!("phone-pad supports Linux, Windows and macOS");
+compile_error!("WriteThere supports Linux, Windows and macOS");
 
 pub struct Platform {
     status: StatusHandle,

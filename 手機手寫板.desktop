@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=手機手寫板
+Name=WriteThere
 Comment=手機掃碼輸入文字，自動貼到電腦
 Exec="/home/amos/Documents/ChatGPT/手機手寫板/run.sh"
 Icon=/home/amos/Documents/ChatGPT/手機手寫板/phone_pad/assets/icon.svg

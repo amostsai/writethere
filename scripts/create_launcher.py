@@ -16,7 +16,7 @@ def exec_quote(value):
 
 launcher = root / "手機手寫板.desktop"
 launcher.write_text("\n".join([
-    "[Desktop Entry]", "Version=1.0", "Type=Application", "Name=手機手寫板",
+    "[Desktop Entry]", "Version=1.0", "Type=Application", "Name=WriteThere",
     "Comment=手機掃碼輸入文字，自動貼到電腦",
     "Exec=" + exec_quote(root / "run.sh"),
     "Icon=" + str(root / "phone_pad/assets/icon.svg"),

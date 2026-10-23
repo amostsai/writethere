@@ -18,9 +18,9 @@ mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
 stage="$(mktemp -d)"
 trap 'rm -rf "$stage"' EXIT
-APP="$stage/Phone Handwriting Pad.app"
+APP="$stage/WriteThere.app"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-install -m 755 "$BINARY" "$APP/Contents/MacOS/phone-pad"
+install -m 755 "$BINARY" "$APP/Contents/MacOS/writethere"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 install -m 644 "$SCRIPT_DIR/../assets/NotoSansCJK-LICENSE.txt" "$APP/Contents/Resources/NotoSansCJK-LICENSE.txt"
 cat > "$APP/Contents/Info.plist" <<PLIST
@@ -28,9 +28,9 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
   <key>CFBundleIdentifier</key><string>tw.local.PhoneHandwritingPad</string>
-  <key>CFBundleName</key><string>Phone Handwriting Pad</string>
-  <key>CFBundleDisplayName</key><string>手機手寫板</string>
-  <key>CFBundleExecutable</key><string>phone-pad</string>
+  <key>CFBundleName</key><string>WriteThere</string>
+  <key>CFBundleDisplayName</key><string>WriteThere</string>
+  <key>CFBundleExecutable</key><string>writethere</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>$VERSION</string>
   <key>CFBundleVersion</key><string>$VERSION</string>
@@ -41,6 +41,6 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </dict></plist>
 PLIST
 plutil -lint "$APP/Contents/Info.plist"
-name="phone-pad-$VERSION-macos-$ARCH"
+name="writethere-$VERSION-macos-$ARCH"
 ditto -c -k --sequesterRsrc --keepParent "$APP" "$OUT/$name.app.zip"
 (cd "$OUT"; shasum -a 256 "$name.app.zip" > "$name.sha256")

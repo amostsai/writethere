@@ -16,19 +16,19 @@ jobs:
           - name: Windows x64
             runner: windows-2022
             target: x86_64-pc-windows-msvc
-            artifact: phone-pad-windows-x64
+            artifact: writethere-windows-x64
           - name: Linux x64
             runner: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
-            artifact: phone-pad-linux-x64
+            artifact: writethere-linux-x64
           - name: macOS ARM64
             runner: macos-14
             target: aarch64-apple-darwin
-            artifact: phone-pad-macos-arm64
+            artifact: writethere-macos-arm64
           - name: macOS Intel
             runner: macos-15-intel
             target: x86_64-apple-darwin
-            artifact: phone-pad-macos-x64
+            artifact: writethere-macos-x64
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
