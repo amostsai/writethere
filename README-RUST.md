@@ -36,7 +36,7 @@ cargo build --locked --release --bin writethere
 
 `./setup.sh` 會編譯 Rust 程式，並在 Linux 建立桌面圖示；`./run.sh` 優先執行 `dist/writethere`，其次 `target/release/writethere`。預先編譯的發行檔無需安裝 Rust。
 
-四種原生建置與打包流程位於 `.github/workflows/build.yml`，可手動執行或以 `v*` 標籤觸發；詳細步驟見 `docs/rust-build.md`。執行工作流程需要先將專案放進你指定的 GitHub 儲存庫；本機尚無 Git 遠端，不會自動上傳原始碼。
+四種原生建置與打包流程位於 `.github/workflows/build.yml`，可手動執行或以 `v*` 標籤觸發；詳細步驟見 [跨平台建置說明](docs/rust-build.md)。專案位於 [GitHub](https://github.com/amostsai/writethere)，已發布的執行檔請見 [下載頁面](https://github.com/amostsai/writethere/releases)。
 
 測試用範例不會編入正式桌面程式：
 
